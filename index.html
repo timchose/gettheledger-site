@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Ledger — Simple Bill Tracking</title>
+<meta name="description" content="Track your bills, see your calendar, stay in control. The Ledger is a simple, private bill tracker for your phone.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #111111;
+    --card: #1a1a1a;
+    --border: #2a2a2a;
+    --text: #e5e5e5;
+    --muted: #737373;
+    --sky: #0ea5e9;
+    --teal: #14b8a6;
+    --amber: #f59e0b;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow behind the icon */
+  .glow {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%);
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    width: 100%;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+  }
+
+  /* App icon */
+  .app-icon {
+    margin-top: 100px;
+    width: 96px;
+    height: 96px;
+    background: var(--sky);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(14,165,233,0.25);
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .app-icon svg {
+    width: 48px;
+    height: 48px;
+    color: white;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  h1 {
+    margin-top: 32px;
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+
+  .tagline {
+    margin-top: 12px;
+    font-size: 18px;
+    color: var(--muted);
+    line-height: 1.5;
+    max-width: 340px;
+  }
+
+  /* Feature pills */
+  .features {
+    margin-top: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .pill .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-sky { background: var(--sky); }
+  .dot-teal { background: var(--teal); }
+  .dot-amber { background: var(--amber); }
+
+  /* Store buttons */
+  .store-buttons {
+    margin-top: 48px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .store-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 24px;
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .store-btn:hover {
+    border-color: #444;
+    background: #222;
+  }
+
+  .store-btn.coming-soon {
+    opacity: 0.45;
+    pointer-events: none;
+    position: relative;
+  }
+
+  .coming-soon-tag {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--amber);
+    font-weight: 600;
+  }
+
+  .store-btn svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .store-btn .label {
+    text-align: left;
+    line-height: 1.2;
+  }
+
+  .store-btn .label small {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .store-btn .label span {
+    font-size: 16px;
+    font-weight: 600;
+    display: block;
+  }
+
+  /* Divider */
+  .divider {
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+    margin: 48px auto 0;
+  }
+
+  /* Price badge */
+  .price-section {
+    margin-top: 32px;
+  }
+
+  .price-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(14,165,233,0.1);
+    border: 1px solid rgba(14,165,233,0.2);
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .price-badge strong {
+    color: var(--sky);
+  }
+
+  .price-note {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* Footer */
+  footer {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    padding: 48px 24px 32px;
+    text-align: center;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 16px;
+  }
+
+  .footer-links a {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover {
+    color: var(--text);
+  }
+
+  .copyright {
+    font-size: 12px;
+    color: #525252;
+  }
+
+  /* Responsive */
+  @media (max-width: 400px) {
+    h1 { font-size: 32px; }
+    .tagline { font-size: 16px; }
+    .app-icon { margin-top: 72px; width: 80px; height: 80px; border-radius: 20px; }
+    .app-icon svg { width: 40px; height: 40px; }
+    .store-btn { padding: 10px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<main>
+  <!-- App Icon -->
+  <div class="app-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+      <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+      <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+    </svg>
+  </div>
+
+  <!-- Title -->
+  <h1>The Ledger</h1>
+  <p class="tagline">Track your bills. See your calendar. Stay in control.</p>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="pill"><span class="dot dot-sky"></span> Bill Tracking</div>
+    <div class="pill"><span class="dot dot-teal"></span> Income Tracking</div>
+    <div class="pill"><span class="dot dot-amber"></span> Smart Insights</div>
+    <div class="pill"><span class="dot dot-sky"></span> Calendar View</div>
+    <div class="pill"><span class="dot dot-teal"></span> Bill Reminders</div>
+    <div class="pill"><span class="dot dot-amber"></span> No Ads, Ever</div>
+  </div>
+
+  <!-- Store Buttons -->
+  <div class="store-buttons">
+    <a href="#" class="store-btn" aria-label="Get it on Google Play">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.04c-.32-.17-.56-.47-.64-.83L3 21.75V2.25l-.46-.46c.08-.36.32-.66.64-.83L13.42 12 3.18 23.04zm10.95-10.33l2.24-2.24 2.49 1.44c.67.39.67 1.37 0 1.75l-2.49 1.44-2.24-2.24-.01-.15zm-.71-.71L4.26 2.84l8.57 4.95 2.24 2.24-1.65 1.97zm0 2.14l1.65 1.97-2.24 2.24-8.57 4.95 9.16-9.16z"/></svg>
+      <div class="label">
+        <small>Get it on</small>
+        <span>Google Play</span>
+      </div>
+    </a>
+    <div class="store-btn coming-soon" aria-label="Coming soon to the App Store">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      <div class="label">
+        <span class="coming-soon-tag">Coming Soon</span>
+        <span>App Store</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Price -->
+  <div class="divider"></div>
+  <div class="price-section">
+    <div class="price-badge">
+      Free to start · Pro for <strong>$6.99</strong> once
+    </div>
+    <p class="price-note">No subscriptions. No ads. Yours forever.</p>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-links">
+    <a href="/legal/privacy-policy.html">Privacy Policy</a>
+    <a href="/legal/terms-of-service.html">Terms of Service</a>
+    <a href="mailto:support@gettheledger.app">Contact</a>
+  </div>
+  <p class="copyright">&copy; 2026 H Group Digital LLC. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
